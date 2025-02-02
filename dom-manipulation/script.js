@@ -194,7 +194,7 @@ function showNotification(message, duration = 3000) {
     setTimeout(() => elements.notification.textContent = '', duration);
 }
 
-// JSON handling (Task 1)
+// JSON handling
 function exportToJson() {
     const dataStr = JSON.stringify(quotes);
     const blob = new Blob([dataStr], { type: 'application/json' });
