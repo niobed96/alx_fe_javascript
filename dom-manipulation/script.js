@@ -131,7 +131,16 @@ document.addEventListener('DOMContentLoaded', () => {
 async function fetchQuotesFromServer() {
     try {
         // Simulated server interaction
-        const response = await fetch('https://jsonplaceholder.typicode.com/posts');
+        const response = await fetch('https://jsonplaceholder.typicode.com/posts',{
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                quotes: quotes,
+                timestamp: new Date().toISOString()
+            })
+        });
         serverData = await response.json();
         
         // Convert server data to quote format
