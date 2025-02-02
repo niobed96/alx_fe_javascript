@@ -68,6 +68,27 @@ function filterQuotes() {
     showRandomQuote();
 }
 
+function importFromJsonFile(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    
+    reader.onload = function(e) {
+        try {
+            const importedQuotes = JSON.parse(e.target.result);
+            quotes = [...quotes, ...importedQuotes];
+            saveQuotes();
+            populateCategories();
+            showRandomQuote();
+            showNotification('Quotes imported successfully!');
+        } catch (error) {
+            showNotification('Invalid JSON file');
+        }
+    };
+    
+    reader.readAsText(file);
+}
 // Enhanced showRandomQuote with filtering
 function showRandomQuote() {
     const filteredQuotes = elements.categoryFilter.value === 'all' 
@@ -106,8 +127,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('newQuote').addEventListener('click', showRandomQuote);
 });
 
-// Task 3: Server sync
-async function syncWithServer() {
+
+async function fetchQuotesFromServer() {
     try {
         // Simulated server interaction
         const response = await fetch('https://jsonplaceholder.typicode.com/posts');
