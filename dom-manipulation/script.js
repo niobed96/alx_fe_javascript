@@ -59,47 +59,58 @@ function addQuote(event){
 
     document.getElementById('newQuoteText').value = "";
     document.getElementById('newQuoteCategory').value = "";
-}
-function saveQuotes() {
-    localStorage.setItem('quotes', JSON.stringify(quotes));
-    sessionStorage.setItem('lastUpdated', new Date().toISOString());
+};
+
+// let quotes = []; // This line is removed to avoid redeclaration
+
+function isLocalStorageAvailable() {
+    try {
+        const testKey = '__test__';
+        localStorage.setItem(testKey, testKey);
+        localStorage.removeItem(testKey);
+        return true;
+    } catch (e) {
+        return false;
+    }
 }
 
-// JSON handling
-function exportToJson() {
-    const dataStr = JSON.stringify(quotes);
-    const blob = new Blob([dataStr], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'quotes.json';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-}
-
-function importFromJsonFile(event) {
-    const file = event.target.files[0];
-    
-    if (file) {
-        const reader = new FileReader();
-        
-        reader.onload = (e) => {
-            try {
-                const importedQuotes = JSON.parse(e.target.result);
-                quotes.push(...importedQuotes);
-                saveQuotes();
-                showRandomQuote();
-                alert('Successfully imported quotes!');
-            } catch (error) {
-                alert('Error importing quotes: Invalid JSON format');
-            }
-        };
-        
-        reader.readAsText(file);
+function initializeQuotes() {
+    if (isLocalStorageAvailable()) {
+        try {
+            const storedQuotes = localStorage.getItem('quotes');
+            quotes = storedQuotes ? JSON.parse(storedQuotes) : [
+                { text: "Be the change you wish to see in the world.", category: "Inspiration" },
+                { text: "The only way to do great work is to love what you do.", category: "Work" }
+            ];
+        } catch (error) {
+            console.error('Error loading quotes from localStorage:', error);
+            quotes = [];
+        }
+    } else {
+        console.warn('localStorage is not available. Using default quotes.');
+        quote = [];
     }
 }
 
 
- 
+document.addEventListener('DOMContentLoaded', () => {
+    initializeQuotes(); 
+    createAddQuoteForm(); // This line is removed as the function is not defined
+    showRandomQuote();
+    
+    // Event listeners
+    document.getElementById('newQuote').addEventListener('click', showRandomQuote);
+    document.getElementById('exportBtn').addEventListener('click', exportToJson);
+    document.getElementById('importFile').addEventListener('change', importFromJsonFile);
+});
+
+function saveQuotes() {
+    if (isLocalStorageAvailable()) {
+        try {
+            localStorage.setItem('quotes', JSON.stringify(quotes));
+            sessionStorage.setItem('lastUpdated', new Date().toISOString());
+        } catch (error) {
+            console.error('Error saving quotes to localStorage:', error);
+        }
+    }
+}
