@@ -60,6 +60,46 @@ function addQuote(event){
     document.getElementById('newQuoteText').value = "";
     document.getElementById('newQuoteCategory').value = "";
 }
+function saveQuotes() {
+    localStorage.setItem('quotes', JSON.stringify(quotes));
+    sessionStorage.setItem('lastUpdated', new Date().toISOString());
+}
+
+// JSON handling
+function exportToJson() {
+    const dataStr = JSON.stringify(quotes);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'quotes.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function importFromJsonFile(event) {
+    const file = event.target.files[0];
+    
+    if (file) {
+        const reader = new FileReader();
+        
+        reader.onload = (e) => {
+            try {
+                const importedQuotes = JSON.parse(e.target.result);
+                quotes.push(...importedQuotes);
+                saveQuotes();
+                showRandomQuote();
+                alert('Successfully imported quotes!');
+            } catch (error) {
+                alert('Error importing quotes: Invalid JSON format');
+            }
+        };
+        
+        reader.readAsText(file);
+    }
+}
 
 
  
