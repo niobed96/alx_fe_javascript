@@ -113,4 +113,20 @@ function saveQuotes() {
             console.error('Error saving quotes to localStorage:', error);
         }
     }
+};
+  // Export functionality remains the same
+function exportToJson() {
+    const dataStr = JSON.stringify(quotes);
+    const blob = new Blob([dataStr], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = 'quotes.json';
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
 }
+
+  // Event listener for export button (already in your initialization code)
+  document.getElementById('exportBtn').addEventListener('click', exportToJson);
